@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('kategori_barangs', function (Blueprint $table) {
-         $table->id();
-         $table->string('nama_kategori');
-         $table->timestamps();
+        $table->id();
+        $table->string('nama_kategori');
+        $table->timestamps();
 });
 
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('kategori_barang');
+        Schema::dropIfExists('kategori_barangs');
     }
 };

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main')
 
 @section('content')
 <a href="{{ route('transaksi.create') }}" class="btn btn-primary mb-3">+ Transaksi Baru</a>

@@ -30,3 +30,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {});
     Route::resource('transaksi', App\Http\Controllers\TransaksiController::class);
     Route::resource('nama', App\Http\Controllers\NamaController::class);
 
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

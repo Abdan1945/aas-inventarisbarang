@@ -11,9 +11,15 @@ return new class extends Migration
         Schema::create('barangs', function (Blueprint $table) {
             $table->id();
             $table->string('nama_barang');
-            $table->foreignId('kategori_id')->constrained('kategori_barangs')->onDelete('cascade');
-            $table->integer('stok');
-            $table->decimal('harga_satuan', 15, 2);
+
+            // Relasi kategori (harus sesuai nama tabel: kategori_barangs)
+            $table->foreignId('kategori_id')
+                ->constrained('kategori_barangs')
+                ->onDelete('cascade');
+
+            $table->integer('stok')->default(0);
+            $table->decimal('harga_satuan', 15, 2)->default(0);
+
             $table->timestamps();
         });
     }
