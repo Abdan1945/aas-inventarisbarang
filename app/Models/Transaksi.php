@@ -6,26 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaksi extends Model
 {
-    protected $fillable = [
-        'kode_transaksi',
-        'id_barang',
-        'tanggal',
-        'total_harga',
-    ];
+    protected $table = 'transaksi';
+    protected $fillable = ['kode_transaksi', 'tanggal', 'jenis', 'keterangan', 'created_by'];
 
-    public function barang()
-    {
-        return $this->belongsTo(Barang::class, 'id_barang');
+    public function details() {
+        return $this->hasMany(TransaksiDetail::class, 'transaksi_id');
     }
 
-    public function kategoris()
-    {
-        return $this->belongsToMany(
-            Kategoribarang::class,
-            'detail_transaksi',
-            'id_transaksi',
-            'id_kategori'
-        )->withPivot('jumlah', 'sub_total')
-         ->withTimestamps();
+    public function barang() {
+        return $this->belongsToMany(Barang::class, 'transaksi_detail')
+            ->withPivot('jumlah')
+            ->withTimestamps();
+    }
+
+    public function creator() {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
+

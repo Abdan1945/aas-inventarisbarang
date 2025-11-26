@@ -1,133 +1,85 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<p>
-
-</p>
 <div class="container">
-    <h3 class="mb-4">Tambah Transaksi Baru</h3>
+    <h1>Buat Transaksi</h1>
+    <form method="POST" action="{{ route('transaksi.store') }}">
+        @csrf
+        <div class="mb-3">
+            <label>Jenis Transaksi</label>
+            <select name="jenis" class="form-control" required>
+                <option value="masuk">Masuk</option>
+                <option value="keluar">Keluar</option>
+            </select>
+        </div>
 
-    {{-- Notifikasi Error --}}
-    @if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Terjadi kesalahan:</strong>
-        <ul class="mb-0">
-            @foreach ($errors->all() as $err)
-            <li>{{ $err }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
+        <div class="mb-3">
+            <label>Tanggal</label>
+            <input type="date" name="tanggal" class="form-control" value="{{ now()->toDateString() }}" required>
+        </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <form action="{{ route('transaksi.store') }}" method="POST">
-                @csrf
+        <div class="mb-3">
+            <label>Keterangan</label>
+            <textarea name="keterangan" class="form-control">{{ old('keterangan') }}</textarea>
+        </div>
 
-                {{-- Pilih Pelanggan --}}
-                <div class="mb-3">
-                    <label for="id_barang" class="form-label">Pelanggan</label>
-                    <select name="id_barang" id="id_barang" class="form-select" required>
-                        <option value="">-- Pilih Pelanggan --</option>
-                        @foreach ($barang as $p)
-                        <option value="{{ $p->id }}">{{ $p->nama_barang }}</option>
+        <h4>Detail Barang</h4>
+        <div id="detail-wrapper">
+            <div class="row g-2 align-items-end detail-row">
+                <div class="col-md-6">
+                    <label>Barang</label>
+                    <select name="details[0][barang_id]" class="form-control" required>
+                        @foreach($barang as $b)
+                            <option value="{{ $b->id }}">{{ $b->nama_barang }} (stok: {{ $b->stok }})</option>
                         @endforeach
                     </select>
                 </div>
-
-                <hr>
-
-                <h5>Daftar Produk</h5>
-
-                {{-- Wrapper Produk --}}
-                <div id="kategori-wrapper">
-                    <div class="row kategori-item mb-3">
-                        <div class="col-md-5">
-                            <label class="form-label">Produk</label>
-                            <select name="id_kategori[]" class="form-select kategori-select" required>
-                                <option value="">-- Pilih Produk --</option>
-                                @foreach ($kategori as $prod)
-                                <option value="{{ $prod->id }}" data-harga="{{ $prod->harga }}">
-                                    {{ $prod->nama_kategori }} - Rp{{ number_format($prod->harga, 0, ',', '.') }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Jumlah</label>
-                            <input type="number" name="jumlah[]" class="form-control jumlah-input" min="1" value="1" required>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Subtotal</label>
-                            <input type="text" class="form-control subtotal" readonly value="Rp0">
-                        </div>
-
-                        <div class="col-md-1 d-flex align-items-end">
-                            <button type="button" class="btn btn-danger btn-remove w-100">×</button>
-                        </div>
-                    </div>
+                <div class="col-md-3">
+                    <label>Jumlah</label>
+                    <input type="number" name="details[0][jumlah]" class="form-control" min="1" required>
                 </div>
-
-                <div class="text-end mb-3">
-                    <button type="button" class="btn btn-sm btn-secondary" id="btn-add">+ Tambah Produk</button>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-secondary add-row">Tambah Baris</button>
                 </div>
-
-                <div class="text-end mb-4">
-                    <h5>Total Harga: <span id="totalHarga">Rp0</span></h5>
-                </div>
-
-                <div class="text-end">
-                    <button type="submit" class="btn btn-primary btn-sm">Simpan Transaksi</button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <button class="btn btn-primary mt-3">Simpan</button>
+        <a href="{{ route('transaksi.index') }}" class="btn btn-secondary mt-3">Batal</a>
+    </form>
 </div>
 
-{{-- Script JS --}}
+
 <script>
-    function hitungSubtotal() {
-        let total = 0;
-        document.querySelectorAll('.kategori-item').forEach(item => {
-            let select = item.querySelector('.kategori-select');
-            let jumlah = item.querySelector('.jumlah-input');
-            let subtotalInput = item.querySelector('.subtotal');
-
-            let harga = select.selectedOptions[0]?.getAttribute('data-harga') || 0;
-            let sub = parseInt(harga) * parseInt(jumlah.value || 0);
-
-            subtotalInput.value = 'Rp' + sub.toLocaleString('id-ID');
-            total += sub;
-        });
-
-        document.getElementById('totalHarga').innerText = 'Rp' + total.toLocaleString('id-ID');
-    }
-
-    document.addEventListener('input', hitungSubtotal);
-    document.addEventListener('change', hitungSubtotal);
-
-    // Tambah komponen baru
-    document.getElementById('btn-add').addEventListener('click', function() {
-        let wrapper = document.getElementById('kategori-wrapper');
-        let newRow = wrapper.firstElementChild.cloneNode(true);
-
-        newRow.querySelectorAll('input').forEach(i => i.value = i.classList.contains('jumlah-input') ? 1 : 'Rp0');
-        newRow.querySelector('.kategori-select').value = '';
-
-        wrapper.appendChild(newRow);
+document.addEventListener('DOMContentLoaded', () => {
+    let index = 1;
+    document.querySelector('.add-row').addEventListener('click', () => {
+        const wrapper = document.getElementById('detail-wrapper');
+        const row = document.createElement('div');
+        row.className = 'row g-2 align-items-end detail-row mt-2';
+        row.innerHTML = `
+            <div class="col-md-6">
+                <label>Barang</label>
+                <select name="details[${index}][barang_id]" class="form-control" required>
+                    @foreach($barang as $b)
+                        <option value="{{ $b->id }}">{{ $b->nama_barang }} (stok: {{ $b->stok }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Jumlah</label>
+                <input type="number" name="details[${index}][jumlah]" class="form-control" min="1" required>
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-danger remove-row">Hapus</button>
+            </div>
+        `;
+        wrapper.appendChild(row);
+        row.querySelector('.remove-row').addEventListener('click', () => row.remove());
+        index++;
     });
-
-    // Hapus komponen
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btn-remove')) {
-            let items = document.querySelectorAll('.kategori-item');
-            if (items.length > 1) {
-                e.target.closest('.kategori-item').remove();
-                hitungSubtotal();
-            }
-        }
-    });
+});
 </script>
+
 @endsection
+

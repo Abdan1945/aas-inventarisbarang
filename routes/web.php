@@ -29,7 +29,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {});
     Route::resource('kategoribarang', App\Http\Controllers\KategoriBarangController::class);
     Route::resource('transaksi', App\Http\Controllers\TransaksiController::class);
     Route::resource('nama', App\Http\Controllers\NamaController::class);
-
+    Route::resource('transaksi_detail', App\Http\Controllers\TransaksiDetailController::class);
 
 
     // test template
