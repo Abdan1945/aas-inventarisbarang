@@ -11,33 +11,34 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Tabel transaksi utama
-        Schema::create('transaksis', function (Blueprint $table) {
-            $table->id();
-            $table->string('kode_transaksi')->unique();
-            $table->foreignId('id_barang')->constrained('barangs')->onDelete('cascade');
-            $table->date('tanggal');
-            $table->integer('total_harga');
-            $table->timestamps();
-        });
+       Schema::create('transaksi', function (Blueprint $table) {
+    $table->id();
+    $table->string('kode_transaksi')->unique();
+    $table->date('tanggal');
+    $table->enum('jenis', ['masuk', 'keluar']);
+    $table->text('keterangan')->nullable();
+    $table->foreignId('created_by')->nullable()->constrained('users');
+    $table->timestamps();
+});
+
 
         // Tabel detail transaksi (pivot)
-        Schema::create('detail_transaksi', function (Blueprint $table) {
-            $table->id();
+        Schema::create('transaksi_details', function (Blueprint $table) {
+    $table->id();
 
-            $table->foreignId('id_transaksi')
-                ->constrained('transaksis')
-                ->onDelete('cascade');
+    $table->foreignId('transaksi_id')
+        ->constrained('transaksi')
+        ->onDelete('cascade');
 
-            $table->foreignId('id_kategori')
-                ->constrained('kategoribarangs') // <- PERBAIKAN: tabel kategori kamu adalah "kategoribarangs"
-                ->onDelete('cascade');
+    $table->foreignId('barang_id')
+        ->constrained('barangs')
+        ->onDelete('cascade');
 
-            $table->integer('jumlah');
-            $table->integer('sub_total');
+    $table->integer('jumlah');
 
-            $table->timestamps();
-        });
+    $table->timestamps();
+});
+
     }
 
     /**

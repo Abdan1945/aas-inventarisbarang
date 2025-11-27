@@ -27,8 +27,9 @@
                         <div class="mb-3">
                             <label class="form-label">Kategori</label>
                             <select name="kategori_id" class="form-select @error('kategori_id') is-invalid @enderror" required>
-                                @foreach ($kategori as $kat)
-                                    <option value="{{ $kat->id }}" {{ $barang->kategori_id == $kat->id ? 'selected' : '' }}>
+                                @foreach ($kategoris as $kat)
+                                    <option value="{{ $kat->id }}"
+                                        {{ $barang->kategori_id == $kat->id ? 'selected' : '' }}>
                                         {{ $kat->nama_kategori }}
                                     </option>
                                 @endforeach

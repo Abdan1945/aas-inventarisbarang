@@ -9,13 +9,13 @@ class Barang extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama_barang', 'stok', 'harga_satuan',
+        'nama_barang', 'stok', 'harga_satuan', 'kategori_id',
     ];
 
     // Relasi many-to-many dengan KategoriBarang
     public function kategori()
 {
-    return $this->belongsTo(KategoriBarang::class, 'id_kategori');
+    return $this->belongsTo(KategoriBarang::class, 'kategori_id');
 }
 
 

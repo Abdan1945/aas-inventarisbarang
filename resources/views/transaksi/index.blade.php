@@ -27,7 +27,8 @@
                 <td>{{ ucfirst($t->jenis) }}</td>
                 <td>{{ $t->details()->count() }}</td>
                 <td>
-                    <a href="{{ route('transaksi.show', $t) }}" class="btn btn-info btn-sm">Detail</a>
+                    <a href="{{ route('transaksi.show', $t) }}" class="btn btn-info btn-sm">Lihat</a>
+                    <a href="{{ route('transaksi.edit', $t) }}" class="btn btn-sm btn-warning">Edit</a>
                     <form action="{{ route('transaksi.destroy', $t) }}" method="POST" class="d-inline">
                         @csrf @method('DELETE')
                         <button class="btn btn-danger btn-sm" onclick="return confirm('Hapus transaksi ini?')">Hapus</button>

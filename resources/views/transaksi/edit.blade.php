@@ -1,104 +1,74 @@
 @extends('layouts.dashboard')
 
 @section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Edit Transaksi: {{ $transaksi->kode_transaksi }}</h3>
+                </div>
 
-    <div class="container">
-       <div class="row justify-content-center">
-       <div class="col-md-8">
-       <div class="card">
-       <div class="card-header">
-       <h3>Edit Transaksi: {{ $transaksi->kode_transaksi }}</h3>
-    </div>
+                <div class="card-body">
+                    <form action="{{ route('transaksi.update', $transaksi->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
-            <div class="card-body">
-                {{-- Form untuk Update Transaksi --}}
-                <form action="{{ route('transaksi.update', $transaksi->id) }}" method="POST">
-                    @csrf
-                    {{-- Laravel menggunakan directive @method('PUT') untuk request update --}}
-                    @method('PUT')
+                        {{-- Jenis Transaksi --}}
+                        <div class="mb-3">
+                            <label for="jenis" class="form-label">Jenis Transaksi</label>
+                            <select name="jenis" class="form-control" required>
+                                <option value="masuk" {{ $transaksi->jenis == 'masuk' ? 'selected' : '' }}>Masuk</option>
+                                <option value="keluar" {{ $transaksi->jenis == 'keluar' ? 'selected' : '' }}>Keluar</option>
+                            </select>
+                        </div>
 
-                    {{-- Input Kode Transaksi (Biasanya tidak diubah, tapi disertakan) --}}
-                    <div class="mb-3">
-                        <label for="kode_transaksi" class="form-label">Kode Transaksi</label>
-                        <input type="text"
-                            class="form-control @error('kode_transaksi') is-invalid @enderror"
-                            id="kode_transaksi"
-                            name="kode_transaksi"
-                            value="{{ old('kode_transaksi', $transaksi->kode_transaksi) }}"
-                            required>
-                        @error('kode_transaksi')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                        {{-- Tanggal --}}
+                        <div class="mb-3">
+                            <label for="tanggal" class="form-label">Tanggal</label>
+                            <input type="date" name="tanggal" class="form-control"
+                                value="{{ old('tanggal', \Carbon\Carbon::parse($transaksi->tanggal)->toDateString()) }}" required>
+                        </div>
 
-                    {{-- Input Tanggal --}}
-                    <div class="mb-3">
-                        <label for="tanggal" class="form-label">Tanggal Transaksi</label>
-                        {{-- Mengambil bagian tanggal saja dari timestamp --}}
-                        <input type="date"
-                            class="form-control @error('tanggal') is-invalid @enderror"
-                            id="tanggal"
-                            name="tanggal"
-                            value="{{ old('tanggal', \Carbon\Carbon::parse($transaksi->tanggal)->format('Y-m-d')) }}"
-                            required>
-                        @error('tanggal')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                        {{-- Keterangan --}}
+                        <div class="mb-3">
+                            <label for="keterangan" class="form-label">Keterangan (opsional)</label>
+                            <textarea name="keterangan" class="form-control">{{ old('keterangan', $transaksi->keterangan) }}</textarea>
+                        </div>
 
-                    {{-- Input Pelanggan / Supplier --}}
-                    <div class="mb-3">
-                        <label for="barang_id" class="form-label">Nama</label>
-                        <select class="form-select @error('supplier_id') is-invalid @enderror"
-                            id="supplier_id"
-                            name="supplier_id"
-                            required>
-                            <option value="">Pilih Pelanggan</option>
-                            {{-- Loop melalui daftar suppliers/transaksis yang tersedia --}}
-                            @foreach ($barangs as $barang)
-                                <option value="{{ $barang->id }}"
-                                    {{-- Cek apakah supplier_id transaksi saat ini cocok, atau jika ada old input --}}
-                                    {{ old('barang_id', $transaksi->barang_id) == $barang->id ? 'selected' : '' }}>
-                                    {{ $barang->nama_barang }} (ID: {{ $barang->id }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('barang_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                        <hr>
+                        <h5>Detail Barang</h5>
 
-                    {{-- Input Total Harga --}}
-                    <div class="mb-3">
-                        <label for="total_harga" class="form-label">Total Harga</label>
-                        <input type="number"
-                            class="form-control @error('total_harga') is-invalid @enderror"
-                            id="total_harga"
-                            name="total_harga"
-                            value="{{ old('total_harga', $transaksi->total_harga) }}"
-                            required
-                            min="0"
-                            step="any">
-                        @error('total_harga')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                        @foreach ($transaksi->details as $i => $det)
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label>Barang</label>
+                                    <select name="details[{{ $i }}][barang_id]" class="form-control" required>
+                                        @foreach ($barangs as $barang)
+                                            <option value="{{ $barang->id }}"
+                                                {{ $barang->id == $det->barang_id ? 'selected' : '' }}>
+                                                {{ $barang->nama_barang }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label>Jumlah</label>
+                                    <input type="number" name="details[{{ $i }}][jumlah]" class="form-control"
+                                        value="{{ old('details.' . $i . '.jumlah', $det->jumlah) }}" min="1" required>
+                                </div>
+                            </div>
+                        @endforeach
 
-                    {{-- Tombol Aksi --}}
-                    <div class="d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-save"></i> Simpan Perubahan
-                        </button>
-                        <a href="{{ route('transaksi.index') }}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Batal
-                        </a>
-                    </div>
-                </form>
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+                            <a href="{{ route('transaksi.index') }}" class="btn btn-secondary">Batal</a>
+                        </div>
+                    </form>
+                </div>
+
             </div>
         </div>
-    </div>
-</div>
-
-
+    </div> 
 </div>
 @endsection

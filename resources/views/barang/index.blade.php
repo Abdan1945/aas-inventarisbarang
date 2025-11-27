@@ -18,10 +18,10 @@
         <tbody>
             @foreach ($barang as $barang)
                 <tr>
-                    <td>{{ $barang->nama }}</td>
-                    <td>{{ $barang->kategoris->nama_kategori ?? '-' }}</td>
+                    <td>{{ $barang->nama_barang }}</td>
+                    <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
                     <td>{{ $barang->stok }}</td>
-                    <td>{{ $barang->harga }}</td>
+                    <td>{{ $barang->harga_satuan }}</td>
                     <td>
                         <a href="{{ route('barang.show', $barang->id) }}" class="btn btn-info btn-sm">Lihat</a>
                         <a href="{{ route('barang.edit', $barang->id) }}" class="btn btn-warning btn-sm">Edit</a>

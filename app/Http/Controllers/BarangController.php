@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
@@ -15,35 +16,22 @@ class BarangController extends Controller
 
     public function create()
     {
-        // Ambil semua kategori untuk dropdown
         $kategoris = KategoriBarang::all();
-
         return view('barang.create', compact('kategoris'));
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'nama_barang'  => 'required|string|max:255',
-        'stok'         => 'required|integer|min:0',
-        'kategori_id'  => 'required|array',
-        'harga_satuan' => 'required|numeric|min:0',
-    ]);
+    {
+        Barang::create([
+            'nama_barang'  => $request->nama_barang,
+            'stok'         => $request->stok,
+            'kategori_id'  => $request->kategori_id,
+            'harga_satuan' => $request->harga_satuan,
+        ]);
 
-
-    $barang = Barang::create([
-    'nama_barang'  => $request->nama_barang,
-    'stok'         => $request->stok,
-    'kategori_id'  => $request->kategori_id[0] ?? null, // ambil kategori pertama
-    'harga_satuan' => $request->harga_satuan,
-]);
-
-$barang->kategoris()->sync($request->kategori_id);
-
-    return redirect()->route('barang.index')
-        ->with('success', 'Barang berhasil ditambahkan!');
-}
-
+        return redirect()->route('barang.index')
+            ->with('success', 'Barang berhasil ditambahkan!');
+    }
 
     public function show(Barang $barang)
     {
@@ -53,28 +41,17 @@ $barang->kategoris()->sync($request->kategori_id);
     public function edit(Barang $barang)
     {
         $kategoris = KategoriBarang::all();
-        return view('barang.edit', compact('barang', 'kategori'));
+        return view('barang.edit', compact('barang', 'kategoris'));
     }
 
     public function update(Request $request, Barang $barang)
     {
-        $request->validate([
-            'nama_barang'  => 'required|string|max:255',
-            'stok'         => 'required|integer|min:0',
-            'kategori_id'  => 'required|array',  // Validasi untuk array kategori
-            'harga_satuan' => 'required|numeric|min:0',
-        ]);
-
-        // Update barang
         $barang->update([
             'nama_barang'  => $request->nama_barang,
             'stok'         => $request->stok,
             'kategori_id'  => $request->kategori_id,
             'harga_satuan' => $request->harga_satuan,
         ]);
-
-        // Menyinkronkan kategori terkait (relasi many-to-many)
-        $barang->kategoris()->sync($request->kategori_id);
 
         return redirect()->route('barang.index')
             ->with('success', 'Barang berhasil diperbarui!');

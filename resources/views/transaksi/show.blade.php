@@ -2,42 +2,52 @@
 
 @section('content')
 <div class="container">
-    <h1>Daftar Transaksi</h1>
-    <a href="{{ route('transaksi.create') }}" class="btn btn-primary mb-3">Buat Transaksi Baru</a>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+    <h2>Detail Transaksi</h2>
+    <hr>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>Kode Transaksi</th>
+            <td>{{ $transaksi->kode_transaksi }}</td>
+        </tr>
+
+        <tr>
+            <th>Tanggal</th>
+            <td>{{ $transaksi->tanggal }}</td>
+        </tr>
+
+        <tr>
+            <th>Jenis</th>
+            <td>{{ ucfirst($transaksi->jenis) }}</td>
+        </tr>
+
+        <tr>
+            <th>Keterangan</th>
+            <td>{{ $transaksi->keterangan ?? '-' }}</td>
+        </tr>
+    </table>
+
+    <h4>Detail Barang</h4>
 
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Kode</th>
-                <th>Tanggal</th>
-                <th>Jenis</th>
-                <th>Jumlah Item</th>
-                <th>Aksi</th>
+                <th>Barang</th>
+                <th>Jumlah</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($transaksi as $t)
-            <tr>
-                <td>{{ $t->kode_transaksi }}</td>
-                <td>{{ $t->tanggal }}</td>
-                <td>{{ ucfirst($t->jenis) }}</td>
-                <td>{{ $t->details()->count() }}</td>
-                <td>
-                    <a href="{{ route('transaksi.show', $t) }}" class="btn btn-info btn-sm">Detail</a>
-                    <form action="{{ route('transaksi.destroy', $t) }}" method="POST" class="d-inline">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-danger btn-sm" onclick="return confirm('Hapus transaksi ini?')">Hapus</button>
-                    </form>
-                </td>
-            </tr>
+            @foreach ($transaksi->details as $detail)
+                <tr>
+                    <td>{{ $detail->barang->nama_barang }}</td>
+                    <td>{{ $detail->jumlah }}</td>
+                </tr>
             @endforeach
         </tbody>
     </table>
 
-    {{ $transaksi->links() }}
+    <a href="{{ route('transaksi.index') }}" class="btn btn-secondary">Kembali</a>
+
 </div>
 @endsection

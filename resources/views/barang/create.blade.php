@@ -29,13 +29,13 @@
                         {{-- Kategori --}}
                         <div class="mb-3">
                             <label for="">Kategori</label>
-                            <select name="id_kategori[]" class="form-control @error('id_kategori') is-invalid @enderror">
+                            <select name="kategori_id" class="form-control @error('kategori_id') is-invalid @enderror">
                                 <option value="Kategori">---- Pilih Kategori ----</option>
                                 @foreach ($kategoris as $data)
                                     <option value="{{ $data->id }}">{{ $data->nama_kategori }}</option>
                                 @endforeach
                             </select>
-                            @error('id_kategori')
+                            @error('kategori_id')
                                 <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                             @enderror
                         </div>

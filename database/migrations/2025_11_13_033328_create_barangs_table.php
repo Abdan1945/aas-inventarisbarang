@@ -11,11 +11,14 @@ return new class extends Migration
         Schema::create('barangs', function (Blueprint $table) {
             $table->id();
             $table->string('nama_barang');
-            $table->foreignId('id_kategori')->constrained('kategori_barangs')->onDelete('cascade');
             $table->integer('stok');
-            $table->decimal('harga_satuan', 15, 2);
+            $table->foreignId('kategori_id')
+                ->constrained('kategori_barangs')   // nama tabel kategori kamu
+                ->onDelete('cascade');
+            $table->integer('harga_satuan');
             $table->timestamps();
         });
+
     }
 
     public function down(): void
